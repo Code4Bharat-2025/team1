@@ -1,4 +1,4 @@
-# Flag Quiz Bot
+# FlagFrenzy-Bot
 
 This is a simple Flask-based chatbot backend that interacts with SwiftChat for a flag quiz game.
 
