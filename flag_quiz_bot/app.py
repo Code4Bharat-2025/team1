@@ -1,15 +1,12 @@
 from flask import Flask, request, jsonify
 import random
-import uuid
 import requests
 
 app = Flask(__name__)
 
 # In-memory session storage
 user_sessions = {}
-quiz_flag= {}
 
-# Flag database
 # Flag database
 flags = {}
 
@@ -31,11 +28,10 @@ def get_all_flags_from_api():
     return flags
 
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0296329455117838/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
-    print("flag test :- ",flags)
     country = random.choice(list(flags.keys()))
     return country, flags[country]["url"], flags[country]["hint"]
 
@@ -44,23 +40,27 @@ def webhook():
     data = request.get_json()
     print("Received data:", data)
 
-    conversation_initiated_by = data.get("conversation_initiated_by")
+    user_id = data.get("conversation_initiated_by")
     user_message = data.get("text", {}).get("body", "").strip().lower()
 
     print("User message:", user_message)
-    
+
     if user_message == "flag":
-        send_flag_quiz(conversation_initiated_by)
-    elif conversation_initiated_by in user_sessions:
-        correct_country = user_sessions.get(conversation_initiated_by, "").lower()
+        send_flag_quiz(user_id)
+    elif user_message == "quit":
+        user_sessions.pop(user_id, None)
+        send_text(user_id, "👋 Quiz ended. Type 'flag' anytime to restart!")
+    elif user_id in user_sessions:
+        correct_country = user_sessions.get(user_id, "").lower()
         if user_message == correct_country:
-            send_text(conversation_initiated_by, "✅ Correct! 🎉")
+            send_text(user_id, "✅ Correct! 🎉")
         else:
-            send_text(conversation_initiated_by, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}.")
-        # Clear the session after answer is checked
-        user_sessions.pop(conversation_initiated_by, None)
+            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}.")
+
+        # Continue the quiz unless quit
+        send_flag_quiz(user_id)
     else:
-        send_text(conversation_initiated_by, "Type 'flag' to start the quiz!")
+        send_text(user_id, "Type 'flag' to start the quiz or 'quit' to stop.")
 
     return jsonify({"status": "ok"})
 
