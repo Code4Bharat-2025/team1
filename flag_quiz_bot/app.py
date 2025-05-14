@@ -111,16 +111,6 @@ def send_flag_quiz(to):
     # Save correct answer to session
     user_sessions[to] = country
 
-    other_countries = [c for c in flags if c != country]
-    incorrect_options = random.sample(other_countries, 3)
-
-    # Combine and shuffle all options
-    all_options = incorrect_options + [country]
-    random.shuffle(all_options)
-
-    # Create a string with enumerated options
-    options_str = "\n".join([f"{i + 1}. {country}" for i, country in enumerate(all_options)])
-
     messages = [
         {
             "to": to,
@@ -142,7 +132,7 @@ def send_flag_quiz(to):
             "to": to,
             "type": "text",
             "text": {
-                "body": f"Options:\n {options_str}"
+                "body": f"Hint: {hint}"
             }
         }
     ]
