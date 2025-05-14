@@ -42,7 +42,7 @@ This project aims to develop an interactive bot application that educates kids a
 2. Start ngrok to expose the local server:
 
     ```bash
-    ngrok http <port>
+    ngrok http 5000
     ```
 
 3. Update the webhook URL using the Swift Chat API.
@@ -50,5 +50,5 @@ This project aims to develop an interactive bot application that educates kids a
 4. Go to [Convegenius Web](https://web.convegenius.ai/home) and select the bot to start.
 
 ## Help using the bot:
-
+Give "flag" as input command to start the quiz and "quit" command to stop the quiz at anytime
 
