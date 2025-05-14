@@ -9,7 +9,8 @@ user_sessions = {}
 
 # Flag database
 flags = {}
-scores = {"total": 5 , "correct": 0, "wrong": 0,  "current": 0}
+scores = {"total": 5, "correct": 0, "wrong": 0, "current": 0}
+
 
 def get_all_flags_from_api():
     url = "https://flagcdn.com/en/codes.json"
@@ -28,24 +29,29 @@ def get_all_flags_from_api():
 
     return flags
 
+
 def get_country_info(country_name):
     url = f"https://restcountries.com/v3.1/name/{country_name}"
     response = requests.get(url)
 
     if response.status_code == 200:
         data = response.json()[0]
-        return "\n Country name : " + data["name"]["common"] + "\n  Capital : " + data.get("capital", ["Unknown"])[0] + "\n  Region : " + data["region"] + "\n  Description : " + f"{data['name']['common']} is a country in {data['region']} with its capital at {data.get('capital', ['Unknown'])[0]}."
+        return "\n Country name : " + data["name"]["common"] + "\n  Capital : " + data.get("capital", ["Unknown"])[
+            0] + "\n  Region : " + data[
+            "region"] + "\n  Description : " + f"{data['name']['common']} is a country in {data['region']} with its capital at {data.get('capital', ['Unknown'])[0]}."
     else:
-        return "error : Could not find data for " + country_name 
+        return "error : Could not find data for " + country_name
 
+    # SwiftChat constants
 
-# SwiftChat constants
 SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/{BOT_ID}/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
+
 
 def get_random_flag():
     country = random.choice(list(flags.keys()))
     return country, flags[country]["url"], flags[country]["hint"]
+
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -54,6 +60,10 @@ def webhook():
 
     user_id = data.get("conversation_initiated_by")
     user_message = data.get("text", {}).get("body", "").strip().lower()
+    option_message = data.get("button_response", {}).get("body", "").strip().lower()
+    print("Selected Option ", option_message)
+    if option_message:
+        user_message = option_message
 
     print("User message:", user_message)
 
@@ -77,6 +87,7 @@ def webhook():
     elif user_id in user_sessions:
         correct_country = user_sessions.get(user_id, "").lower()
         info = get_country_info(correct_country)
+        print("Selected Country:", user_message)
         if user_message == correct_country:
             scores["correct"] += 1
             scores["current"] += 1
@@ -84,7 +95,8 @@ def webhook():
         else:
             scores["wrong"] += 1
             scores["current"] += 1
-            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}." + info + f"\nYour score: {scores['correct']}/{scores['current']}")
+            send_text(user_id,
+                      f"❌ Incorrect. The correct answer was {correct_country.capitalize()}." + info + f"\nYour score: {scores['correct']}/{scores['current']}")
 
         # Continue with next quiz round
         send_flag_quiz(user_id)
@@ -94,6 +106,7 @@ def webhook():
         send_text(user_id, "Type 'flag' to start the quiz or 'quit' to stop.")
 
     return jsonify({"status": "ok"})
+
 
 def send_text(to, message):
     payload = {
@@ -105,12 +118,23 @@ def send_text(to, message):
     }
     send_to_swiftchat(payload)
 
+
 def send_flag_quiz(to):
     country, image_url, hint = get_random_flag()
 
     # Save correct answer to session
     user_sessions[to] = country
 
+    other_countries = [c for c in flags if c != country]
+    incorrect_options = random.sample(other_countries, 3)
+
+    # Combine and shuffle all options
+    all_options = incorrect_options + [country]
+    random.shuffle(all_options)
+
+    # Create a string with enumerated options
+    # options_str = "\n".join([f"{i + 1}. {country}" for i, country in enumerate(all_options)])
+    button_msg = send_button_text_swift_chat(to, all_options)
     messages = [
         {
             "to": to,
@@ -128,17 +152,12 @@ def send_flag_quiz(to):
             },
             "rating_type": "thumb"
         },
-        {
-            "to": to,
-            "type": "text",
-            "text": {
-                "body": f"Hint: {hint}"
-            }
-        }
+        button_msg
     ]
 
     for msg in messages:
         send_to_swiftchat(msg)
+
 
 def send_to_swiftchat(payload):
     headers = {
@@ -152,6 +171,44 @@ def send_to_swiftchat(payload):
         print("Response:", response.status_code, response.text)
     except Exception as e:
         print("Error sending to SwiftChat:", e)
+
+
+def send_button_text_swift_chat(to, countries_options):
+    buttons = []
+    button = {}
+    for country in countries_options:
+        # button = {
+        #     "type": "solid",
+        #     "body": country,
+        #     "reply": country
+        # }
+        buttons.append({
+            "type": "solid",
+            "body": country,
+            "reply": country
+        })
+
+    buttons.append({
+        "type": "solid",
+        "body": "Quit",
+        "reply": "quit"
+    })
+    button_message = {
+        "to": to,
+        "type": "button",
+        "button": {
+            "body": {
+                "type": "text",
+                "text": {
+                    "body": "Select correct country from below option..."
+                }
+            },
+            "buttons": buttons,
+            "allow_custom_response": False
+        }
+    }
+    return button_message
+
 
 if __name__ == '__main__':
     get_all_flags_from_api()
