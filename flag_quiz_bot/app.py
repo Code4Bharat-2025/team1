@@ -39,13 +39,9 @@ def get_country_info(country_name):
         return "error : Could not find data for " + country_name 
 
 
-<<<<<<< HEAD
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0296329455117838/messages"
-=======
 # SwiftChat constants
 BOT_ID = "Add your bot id here"
 SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/{{BOT_ID}}/messages"
->>>>>>> 0160b27e30dd1ad9a6305014dcbd2b07c3760d7c
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
