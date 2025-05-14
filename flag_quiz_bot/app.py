@@ -44,7 +44,7 @@ def get_country_info(country_name):
 
     # SwiftChat constants
 
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/{BOT_ID}/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0296329455117838/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 
@@ -71,7 +71,7 @@ def webhook():
     if user_message == "quit":
         if user_id in user_sessions:
             user_sessions.pop(user_id)
-            send_text(user_id, "👋 Quiz ended. Type 'flag' anytime to restart!")
+            send_text(user_id, f"👋 Quiz ended. Here are your final scores:\n✅ Correct Answers: {scores['correct']}\n❌ Wrong Answers: {scores['wrong']}\n📊 Total Questions Attempted: {scores['current']}\nType 'flag' anytime to restart!")
         else:
             send_text(user_id, "You're not in a quiz. Type 'flag' to start!")
         return jsonify({"status": "ok"})
