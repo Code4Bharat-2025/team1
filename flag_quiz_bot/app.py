@@ -10,30 +10,32 @@ user_sessions = {}
 quiz_flag= {}
 
 # Flag database
-flags = {
-    "India": {
-        "url": "https://flagcdn.com/w320/in.png",
-        "hint": "It starts with 'I'"
-    },
-    "Germany": {
-        "url": "https://flagcdn.com/w320/de.png",
-        "hint": "It starts with 'G'"
-    },
-    "France": {
-        "url": "https://flagcdn.com/w320/fr.png",
-        "hint": "It starts with 'F'"
-    },
-    "Japan": {
-        "url": "https://flagcdn.com/w320/jp.png",
-        "hint": "It starts with 'J'"
-    }
-}
+# Flag database
+flags = {}
+
+def get_all_flags_from_api():
+    url = "https://flagcdn.com/en/codes.json"
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch country codes: {response.status_code}")
+
+    code_to_country = response.json()
+
+    for code, country in code_to_country.items():
+        flags[country] = {
+            "url": f"https://flagcdn.com/w320/{code}.png",
+            "hint": f"It starts with '{country[0]}'"
+        }
+
+    return flags
 
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
+    print("flag test :- ",flags)
     country = random.choice(list(flags.keys()))
     return country, flags[country]["url"], flags[country]["hint"]
 
@@ -121,4 +123,5 @@ def send_to_swiftchat(payload):
         print("Error sending to SwiftChat:", e)
 
 if __name__ == '__main__':
+    get_all_flags_from_api()
     app.run(port=5000)
