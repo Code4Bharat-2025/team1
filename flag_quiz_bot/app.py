@@ -27,8 +27,19 @@ def get_all_flags_from_api():
 
     return flags
 
+def get_country_info(country_name):
+    url = f"https://restcountries.com/v3.1/name/{country_name}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()[0]
+        return "\n Country name : " + data["name"]["common"] + "\n  Capital : " + data.get("capital", ["Unknown"])[0] + "\n  Region : " + data["region"] + "\n  Description : " + f"{data['name']['common']} is a country in {data['region']} with its capital at {data.get('capital', ['Unknown'])[0]}."
+    else:
+        return "error : Could not find data for " + country_name 
+
+
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0296329455117838/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
@@ -61,10 +72,11 @@ def webhook():
     # Answering a quiz
     elif user_id in user_sessions:
         correct_country = user_sessions.get(user_id, "").lower()
+        info = get_country_info(correct_country)
         if user_message == correct_country:
-            send_text(user_id, "✅ Correct! 🎉")
+            send_text(user_id, "✅ Correct! 🎉" + info)
         else:
-            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}.")
+            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}." + info)
 
         # Continue with next quiz round
         send_flag_quiz(user_id)
