@@ -40,7 +40,8 @@ def get_country_info(country_name):
 
 
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0251414401249800/messages"
+BOT_ID = "Add your bot id here"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/{{BOT_ID}}/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
@@ -111,16 +112,6 @@ def send_flag_quiz(to):
     # Save correct answer to session
     user_sessions[to] = country
 
-    other_countries = [c for c in flags if c != country]
-    incorrect_options = random.sample(other_countries, 3)
-
-    # Combine and shuffle all options
-    all_options = incorrect_options + [country]
-    random.shuffle(all_options)
-
-    # Create a string with enumerated options
-    options_str = "\n".join([f"{i + 1}. {country}" for i, country in enumerate(all_options)])
-
     messages = [
         {
             "to": to,
@@ -142,7 +133,7 @@ def send_flag_quiz(to):
             "to": to,
             "type": "text",
             "text": {
-                "body": f"Options:\n {options_str}"
+                "body": f"Hint: {hint}"
             }
         }
     ]

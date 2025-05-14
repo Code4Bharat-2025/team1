@@ -44,8 +44,8 @@ def get_country_info(country_name):
 
     # SwiftChat constants
 
-
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0251414401249800/messages"
+BOT_ID = "Add your bot id here"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/{{BOT_ID}}/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 
