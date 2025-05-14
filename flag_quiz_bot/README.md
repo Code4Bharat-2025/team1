@@ -1,4 +1,5 @@
 # FlagFrenzy-Bot
+This is a simple Flask-based chatbot backend that interacts with SwiftChat for a flag quiz game.
 
 ## Problem Statement
 Children often struggle to recognize and remember the flags of different countries due to a lack of engaging and interactive learning tools. Traditional methods of memorization can be ineffective and uninspiring, especially for younger learners. There is a need for an educational tool that combines visual learning with gamified interaction to help kids develop better recall and understanding of world flags in a fun, engaging way.
