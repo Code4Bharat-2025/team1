@@ -5,7 +5,7 @@ Children often struggle to recognize and remember the flags of different countri
 
 This project aims to develop an interactive bot application that educates kids about country flags through a quiz-based format. The bot will present flag images and ask multiple-choice or hint based questions, providing instant feedback/score and fun facts to reinforce learning. The goal is to make geography more accessible and enjoyable, supporting both informal learning at home and structured education settings.
 
-## Key Features of the Flag Quiz Bot App
+## Key Features of the FlagFrenzy-Bot App
 1. Interactive Image-Based Bot
    A fun and engaging chatbot that uses vivid images of country flags to make learning visually appealing and interactive for kids.
 
