@@ -9,6 +9,7 @@ user_sessions = {}
 
 # Flag database
 flags = {}
+scores = {"total": 5 , "correct": 0, "wrong": 0,  "current": 0}
 
 def get_all_flags_from_api():
     url = "https://flagcdn.com/en/codes.json"
@@ -39,7 +40,7 @@ def get_country_info(country_name):
 
 
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
@@ -67,6 +68,9 @@ def webhook():
 
     # Start new quiz
     if user_message == "flag":
+        scores["current"] = 0
+        scores["correct"] = 0
+        scores["wrong"] = 0
         send_flag_quiz(user_id)
 
     # Answering a quiz
@@ -74,9 +78,13 @@ def webhook():
         correct_country = user_sessions.get(user_id, "").lower()
         info = get_country_info(correct_country)
         if user_message == correct_country:
-            send_text(user_id, "✅ Correct! 🎉" + info)
+            scores["correct"] += 1
+            scores["current"] += 1
+            send_text(user_id, f"✅ Correct! 🎉 {info}\nYour score: {scores['correct']}/{scores['current']}")
         else:
-            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}." + info)
+            scores["wrong"] += 1
+            scores["current"] += 1
+            send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}." + info + f"\nYour score: {scores['correct']}/{scores['current']}")
 
         # Continue with next quiz round
         send_flag_quiz(user_id)
