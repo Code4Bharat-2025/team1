@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import random
 import uuid
+import requests
 
 app = Flask(__name__)
 
@@ -31,13 +32,14 @@ def get_random_flag():
 def webhook():
     data = request.get_json()
     print("Received data:", data)
-
     CONVERSATION_INITIATED_BY = data.get("conversation_initiated_by")
     print("CONVERSATION_INITIATED_BY:", CONVERSATION_INITIATED_BY)
-    
+
     user_message = data.get("text", {}).get("body", "").lower()
     user_id = data.get("user", {}).get("id", "anonymous")
 
+    print("User message:", user_message)
+    call_app(CONVERSATION_INITIATED_BY)
     if user_message == "flag":
         country, image_url, hint = get_random_flag()
         messages = [
@@ -73,6 +75,28 @@ def webhook():
         ]
 
     return jsonify({"messages": messages})
+
+
+#write a function to start the Flask app
+def call_app(CONVERSATION_INITIATED_BY):
+    url = "https://v1-api.swiftchat.ai/api/bots/0296329455117838/messages"
+    headers = {
+        "Authorization": "Bearer 21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "API-Key": "21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "Content-Type": "application/json"
+    }
+    data = {
+    "to": CONVERSATION_INITIATED_BY,
+    "type": "text",
+    "text": {
+        "body": "Hello"
+    }
+}
+
+    response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
+    print(response.json())
+
 
 if __name__ == '__main__':
     app.run(port=5000)
