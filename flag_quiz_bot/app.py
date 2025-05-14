@@ -45,11 +45,20 @@ def webhook():
 
     print("User message:", user_message)
 
+    # Always check for 'quit' first
+    if user_message == "quit":
+        if user_id in user_sessions:
+            user_sessions.pop(user_id)
+            send_text(user_id, "👋 Quiz ended. Type 'flag' anytime to restart!")
+        else:
+            send_text(user_id, "You're not in a quiz. Type 'flag' to start!")
+        return jsonify({"status": "ok"})
+
+    # Start new quiz
     if user_message == "flag":
         send_flag_quiz(user_id)
-    elif user_message == "quit":
-        user_sessions.pop(user_id, None)
-        send_text(user_id, "👋 Quiz ended. Type 'flag' anytime to restart!")
+
+    # Answering a quiz
     elif user_id in user_sessions:
         correct_country = user_sessions.get(user_id, "").lower()
         if user_message == correct_country:
@@ -57,8 +66,10 @@ def webhook():
         else:
             send_text(user_id, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}.")
 
-        # Continue the quiz unless quit
+        # Continue with next quiz round
         send_flag_quiz(user_id)
+
+    # No quiz in progress
     else:
         send_text(user_id, "Type 'flag' to start the quiz or 'quit' to stop.")
 
