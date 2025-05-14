@@ -5,6 +5,10 @@ import requests
 
 app = Flask(__name__)
 
+# In-memory session storage
+user_sessions = {}
+quiz_flag= {}
+
 # Flag database
 flags = {
     "India": {
@@ -39,12 +43,20 @@ def webhook():
     print("Received data:", data)
 
     conversation_initiated_by = data.get("conversation_initiated_by")
-    user_message = data.get("text", {}).get("body", "").lower()
+    user_message = data.get("text", {}).get("body", "").strip().lower()
 
     print("User message:", user_message)
     
     if user_message == "flag":
         send_flag_quiz(conversation_initiated_by)
+    elif conversation_initiated_by in user_sessions:
+        correct_country = user_sessions.get(conversation_initiated_by, "").lower()
+        if user_message == correct_country:
+            send_text(conversation_initiated_by, "✅ Correct! 🎉")
+        else:
+            send_text(conversation_initiated_by, f"❌ Incorrect. The correct answer was {correct_country.capitalize()}.")
+        # Clear the session after answer is checked
+        user_sessions.pop(conversation_initiated_by, None)
     else:
         send_text(conversation_initiated_by, "Type 'flag' to start the quiz!")
 
@@ -62,6 +74,9 @@ def send_text(to, message):
 
 def send_flag_quiz(to):
     country, image_url, hint = get_random_flag()
+
+    # Save correct answer to session
+    user_sessions[to] = country
 
     messages = [
         {
