@@ -31,7 +31,7 @@ def get_all_flags_from_api():
     return flags
 
 # SwiftChat constants
-SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
+SWIFTCHAT_API_URL = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
 SWIFTCHAT_API_KEY = "21bda582-e8d0-45bc-bb8b-a5c6c555d176"
 
 def get_random_flag():
