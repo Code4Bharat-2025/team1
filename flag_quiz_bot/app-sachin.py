@@ -36,10 +36,17 @@ def webhook():
     print("CONVERSATION_INITIATED_BY:", CONVERSATION_INITIATED_BY)
 
     user_message = data.get("text", {}).get("body", "").lower()
+    option_message = data.get("button_response", {}).get("button_index", "")
     user_id = data.get("user", {}).get("id", "anonymous")
 
     print("User message:", user_message)
-    call_app(CONVERSATION_INITIATED_BY)
+    
+    if option_message == 0:
+        show_flag_option(CONVERSATION_INITIATED_BY)
+
+    if user_message == "hello":
+        call_options(CONVERSATION_INITIATED_BY)
+    
     if user_message == "flag":
         country, image_url, hint = get_random_flag()
         messages = [
@@ -77,9 +84,9 @@ def webhook():
     return jsonify({"messages": messages})
 
 
-#write a function to start the Flask app
+#write a function to start the Flask app check
 def call_app(CONVERSATION_INITIATED_BY):
-    url = "https://v1-api.swiftchat.ai/api/bots/0233831184899718/messages"
+    url = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
     headers = {
         "Authorization": "Bearer 21bda582-e8d0-45bc-bb8b-a5c6c555d176",
         "API-Key": "21bda582-e8d0-45bc-bb8b-a5c6c555d176",
@@ -97,6 +104,63 @@ def call_app(CONVERSATION_INITIATED_BY):
     print(response.status_code)
     print(response.json())
 
+
+def call_options(CONVERSATION_INITIATED_BY):
+    url = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
+    headers = {
+        "Authorization": "Bearer 21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "API-Key": "21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "Content-Type": "application/json"
+    }
+    data = {
+    "to": CONVERSATION_INITIATED_BY,
+    "type": "button",
+    "button": {
+        "body": {
+            "type": "text",
+            "text": {
+                "body": "Hello, Select option to check your knowledge about flags."
+            }
+        },
+        "buttons": [
+            {
+                "type": "solid",
+                "body": "Guess Country Flag",
+                "reply": "Which country flag is this"
+            },
+            {
+                "type": "solid",
+                "body": "Intersting Fact - Flag",
+                "reply": "Intersting fact avout flag"
+            }
+        ],
+        "allow_custom_response": False
+    }
+}
+
+
+    response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
+    print(response.json())
+    
+def show_flag_option(CONVERSATION_INITIATED_BY):
+    url = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
+    headers = {
+        "Authorization": "Bearer 21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "API-Key": "21bda582-e8d0-45bc-bb8b-a5c6c555d176",
+        "Content-Type": "application/json"
+    }
+    data = {
+    "to": CONVERSATION_INITIATED_BY,
+    "type": "image",
+    "image": {
+        "url": "https://flagcdn.com/w320/in.png",
+        "body": "Test"
+    }
+}
+    response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
+    print(response.json())    
 
 if __name__ == '__main__':
     app.run(port=5000)
