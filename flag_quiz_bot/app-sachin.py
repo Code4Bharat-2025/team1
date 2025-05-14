@@ -84,7 +84,7 @@ def webhook():
     return jsonify({"messages": messages})
 
 
-#write a function to start the Flask app
+#write a function to start the Flask app check
 def call_app(CONVERSATION_INITIATED_BY):
     url = "https://v1-api.swiftchat.ai/api/bots/0281318935143341/messages"
     headers = {
