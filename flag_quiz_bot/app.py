@@ -32,6 +32,9 @@ def webhook():
     data = request.get_json()
     print("Received data:", data)
 
+    CONVERSATION_INITIATED_BY = data.get("conversation_initiated_by")
+    print("CONVERSATION_INITIATED_BY:", CONVERSATION_INITIATED_BY)
+    
     user_message = data.get("text", {}).get("body", "").lower()
     user_id = data.get("user", {}).get("id", "anonymous")
 
