@@ -75,7 +75,7 @@ def send_flag_quiz(to):
             "to": to,
             "type": "image",
             "image": {
-                "link": image_url,
+                "url": image_url,
                 "body": "Here's the flag!"
             },
             "rating_type": "thumb"
